@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Loops</title>
+  </head>
+
+  <body>
+    <h1>Loops</h1>
+
+    <!--
+      We'll populate this unordered list using JavaScript!
+    -->
+    <ul></ul>
+
+    <script>
+
+      var cats = ["Flynn", "Quorra", "Charlie", "Badger", "Rosa"];
+
+      cats.forEach(function(d) {
+        var listItem = document.createElement("li");
+        var itemText = document.createTextNode(d);
+        listItem.appendChild(itemText);
+        document.querySelector("ul").appendChild(listItem);
+      });
+    </script>
+  </body>
+</html>

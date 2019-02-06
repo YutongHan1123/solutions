@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Adding Scripts</title>
+  </head>
+
+  <body>
+    <h1>Adding Scripts</h1>
+    <script src="js/vendor/d3.min.js"></script>
+    <script src="js/my-script.js"></script>
+
+    <script>
+      var codeQuestion = window.confirm("Do you like JavaScript");
+
+      var pEl = document.createElement("p");
+      var response = "";
+
+      if (codeQuestion) {
+        response = "Wonderful! JavaScript is fun!";
+      } else {
+        response = "JavaScript is weird, isn't it?";
+      }
+
+      var pText = document.createTextNode(response)
+
+      document.body.appendChild(pText);
+    </script>
+  </body>
+</html>
