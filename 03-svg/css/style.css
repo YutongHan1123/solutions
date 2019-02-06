@@ -1,0 +1,49 @@
+body {
+  font-family: sans-serif;
+}
+
+svg {
+  border: 1px solid #222;
+  background: #eee;
+  width: 600px;
+  height: 200px;
+}
+
+circle {
+  fill: orange;
+  opacity: 0.5;
+}
+
+/* Another option:
+
+  circle {
+    fill: rgba(255,165,0,0.5);
+  }
+
+  Instead of using separate properties for fill and opacity, use the
+  rgba() value, setting the color and the opacity!
+*/
+
+polygon {
+  stroke: black;
+  stroke-width: 2px;
+  fill: white;
+}
+
+line {
+  stroke: black;
+  stroke-width: 2px;
+}
+
+#rect {
+  stroke-width: 2px;
+  stroke: blue;
+  fill: transparent;
+}
+
+#square {
+  stroke-dasharray: 5,5;
+  stroke-width: 3px;
+  stroke: red;
+  fill: white;
+}
