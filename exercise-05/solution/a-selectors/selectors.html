@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Selectors</title>
+    <link href="css/style.css" rel="stylesheet" />
+  </head>
+  <body>
+    <h1>Selectors</h1>
+
+
+    <script src="js/d3.min.js"></script>
+    <script>
+
+      // OPTION 1: The long way ...
+
+      // d3.selectAll("body")
+      //   .append("h2")
+      //   .text("Cats are awesome!")
+      //   .style("color", "rgb(206,55,92)");
+      //
+      // d3.selectAll("body")
+      //   .append("p")
+      //   .text("I love cats!")
+      //   .style("font-size", "24px");
+      //
+      // d3.selectAll("body")
+      //   .append("p")
+      //   .append("span")
+      //   .text("Me, too!")
+      //   .style("font-weight", "bold");
+      //
+      // d3.selectAll("body")
+      //   .append("div")
+      //   .text("A div is a box. Cats like boxes.")
+      //   .style("background-color", "rgb(228,179,76)");
+
+      // The text color for div is set in an external style sheet.
+
+
+      // OPTION 2: Using a variable to repeat use of
+      // d3.selectAll("body"). This is a more common practice in d3.
+      // Whenever possible, try to avoid repeating code.
+
+      var body = d3.selectAll("body");
+
+      body.append("h2")
+        .text("Cats are awesome!")
+        .style("color", "rgb(206,55,92)");
+
+      body.append("p")
+        .text("I love cats!")
+        .style("font-size", "24px");
+
+      // body.append("p")
+      //   .append("span")
+      //   .text("Me, too!")
+      //   .style("font-weight", "bold");
+
+      // Technically, inline elements should not stand alone. So we
+      // need to create a block element -- in this case, p -- to
+      // contain the span.
+
+      body.selectAll("p")
+        .append("span")
+        .text(" I love cats, too!")
+        .style("font-weight", "bold");
+
+      // Because we created a p in the previous step, we could
+      // selectAll("p") inside body, then append a span.
+
+      body.append("div")
+        .text("A div is a box. Cats like boxes.")
+        .style("background-color", "rgb(228,179,76)");
+
+      // The text color for div is set in an external style sheet.
+
+    </script>
+  </body>
+</html>

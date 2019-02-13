@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Create a Bar Chart</title>
+    <link href="css/style.css" rel="stylesheet" />
+  </head>
+  <body>
+    <h1>Create a Bar Chart</h1>
+
+    <script src="js/d3.min.js"></script>
+    <script>
+
+      d3.csv("data/avg_temp.csv")
+        .then(function(data) {
+
+          d3.select("body")
+            .selectAll("div")
+            .data(data)
+            .enter()
+            .append("div")
+            .text(function(d) { return d.State + ": " + d.Avg })
+            .style("width", function(d) {
+              var multiplier = d.Avg * 5;
+              return multiplier + "px";
+            });
+
+            // What about the other styles?
+
+            // We placed those in an external style sheet because they
+            // are static and repeated for *every* bar in our chart. By
+            // adding the style properties to *each* div, it requires
+            // more processing on the computer's part. This may not
+            // seem obvious to you with a new MacBook Pro, but if
+            // someone loads the chart on an older machine, loading
+            // could be delayed.
+
+            // Also, if we were working with a team and someone else
+            // needed to change the style, looking in a css file might
+            // be the first step, as opposed to digging through
+            // JavaScript.
+
+            // Always give thought to keeping structure (HTML),
+            // presentation (CSS) and interactivity (JS) separate in
+            // your code. It is not always possible, but in this case,
+            // it is.
+
+        });
+
+    </script>
+  </body>
+</html>
