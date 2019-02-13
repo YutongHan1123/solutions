@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Debugging</title>
+  </head>
+
+
+  <body>
+    <h1>Debugging</h1>
+
+    <p>Because dogs.</p>
+
+    <h2>Favorite Toys</h2>
+
+    <ul></ul>
+
+    <h2>Top Catnip Strains</h2>
+
+    <ol></ol>
+
+    <script>
+
+      // a simple text edit
+      var pEl = document.querySelector("p");
+      pEl.innerHTML = "Because <em>cats</em>."
+
+
+      // toys section
+
+      listBuilder(item) {
+        var listItem = document.createElement("li");
+        var itemText = document.createTextNode(item);
+        listItem.appendChild(itemText);
+      }
+
+      var toys = ["ball", "mouse" "fish-on-a-stick"];
+
+      toys.forEach(function() {
+        document.querySelector("ul").appendChild(listBuilder());
+      })
+
+
+
+      // catnip section
+
+      var catnip = [
+        {
+          name: "Bastet Kush"
+          stars: "5/5"
+        },
+        {
+          name: "Meowy Wowie",
+          stars: "4/5"
+        },
+        {
+          name: "Egyptian Bliss",
+          stars: "4/5"
+        },
+        {
+          name: "Cool Dawg",
+          stars: "1/5"
+        }
+      ];
+
+      catnip.forEach(function(d) {
+        document.querySelector("ul").appendChild(listBuilder(d.name + " " + d.stars + ")" ));
+      });
+    </script>
+  </body>
+</html>
