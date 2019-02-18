@@ -1,4 +1,4 @@
-# Warmup Exercise: JavaScript
+# Warmup Exercise: Introduction to d3
 
 
 ## Objectives
@@ -37,7 +37,7 @@ Build these pages *without* the aid of graphical user interface software (i.e. D
 
 There are three separate exercises in this folder. These are independent of one another.
 
-All examples will use the [d3.js](https://d3js.org/) library. Make sure to create a separate directory for each exercise to hold the d3 library.
+All exercises will use the [d3.js](https://d3js.org/) library. Make sure to create a separate directory for each exercise to hold the d3 library.
 
 We will be doing this for now to start getting used to downloading the library and using the local file for our projects.
 
