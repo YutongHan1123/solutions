@@ -1,0 +1,25 @@
+body {
+  font-family: sans-serif;
+}
+
+/*
+  The following rule exists so you can see the dimensions of the
+  svg created.
+*/
+
+#square svg,
+#circle svg {
+  border: 1px solid #222;
+}
+
+/*
+  We could have used the 'style' method in d3 to apply our styles, but
+  we'd be repeating ourselves. Since the styles apply to both circles,
+  we are better off placing these in the style sheet, so we can write
+  the rules once and use them multiple times.
+*/
+
+circle {
+  opacity: 0.5;
+  fill: orange;
+}

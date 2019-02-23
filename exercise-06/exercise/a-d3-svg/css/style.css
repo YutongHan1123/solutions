@@ -1,0 +1,8 @@
+body {
+  font-family: sans-serif;
+}
+
+#square svg,
+#circle svg {
+  border: 1px solid #222;
+}

@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta charset="utf-8">
+		<title>d3 Bar Chart (Yankees Players Ages)</title>
+		<style>
+			rect {
+				fill: rgb(0,48,135);
+			}
+
+			text {
+				font-family: sans-serif;
+				fill: white;
+			}
+		</style>
+	</head>
+	<body>
+
+		<script src="js/d3.min.js"></script>
+		<script>
+			// Width and Height
+			var w = 800;
+			var h = 100;
+
+
+			// DATA IMPORT
+
+			d3.csv("data/yankees.csv").then(function(data) {
+
+			  // BAR CHART
+
+				// Select body and append the svg. Capturing this reference in the
+				// variable 'svg' so the reference can be re-used as the svg is
+				// modified.
+
+				var svg = d3.select("body").append("svg");
+
+
+				// Apply the width and height to the svg.
+
+				svg.attr("width", w)
+				   .attr("height", h);
+
+
+				// selectAll rectangles ('rect') to create the elements the data
+				// will be bound to. Attach the data. Use the 'enter' method to
+				// bind a data item to a 'rect'. Append all the 'rect' elements to
+				// the svg.
+
+				svg.selectAll("rect")
+				   .data(data)
+					 .enter()
+					 .append("rect")
+
+
+					 // A continuation of the chain above -- we have separated it here
+					 // to explain the details in each 'attr' method below.
+
+					 // 'rect' requires four attributes: x, y, width and height.
+
+					 // For x, multiply the index by 32 -- 32 accounts for our width
+					 // of 30 (set below) and the 2-pixel gap between each bar.
+
+					 // For y, if only d.Age is used to position the bar, the chart
+					 // will be upside-down. To fix this, subtract d.Age from the
+					 // height of the svg.
+
+					 // The width is set to 30 (pixels), as specified in the exercise.
+
+					 // The height is each player's age, which is stored in d.Age.
+
+					 .attr("x", function(d, i) {
+					   return (i * 32);
+				   })
+				   .attr("y", function(d) {
+						 return h - d.Age;
+					 })
+					 .attr("width", 30)
+					 .attr("height", function(d) {
+						 return d.Age;
+					 });
+
+
+
+				// LABELS
+
+				// The 'parseName' function is used to craft part of our label.
+
+				// parseName expects a player name as an argument. In the data, the
+				// player's first and last name are separated by a space. Using the
+				// 'split' method, each part of the name is placed into an array:
+
+				// "John Smith" => ["John", "Smith"]
+
+				// Use bracket notation to get the first, last names. Then use the
+        // 'charAt' method to return the first character of each string.
+
+				// "John" => "J"
+				// "Smith" => "S"
+
+				// Another option is to use bracket notation to get the first, last
+				// initial(s):
+
+				// name[0][0] => "John" => "J"
+				// name[1][0] => "Smith" => "S"
+
+				function parseName(player) {
+					var name = player.split(" ");
+					return name[0].charAt(0) + name[1].charAt(0)
+				}
+
+
+				// selectAll text ('text') to create the elements the data
+				// will be bound to. Attach the data. Use the 'enter' method to
+				// bind a data item to a 'text'. Append all the 'text' elements to
+				// the svg.
+
+				var labels = svg.selectAll("text")
+					 .data(data)
+					 .enter()
+					 .append("text")
+
+					 // Again, a continuation of the chain above...
+
+					 // Use JavaScript to parse information from each player object.
+					 // The 'parseName' function returns the first and last initial of
+					 // the player. Add a dash and the player's position to create the
+					 // desired text label.
+
+					 // Use the 'style' method to adjust the font size of the text
+					 // to 8 pixels. (Your font size may vary.)
+
+					 .text(function(d) {
+						 return parseName(d.Name) + "-" + d.Position;
+					 })
+					 .style("font-size", "8px");
+
+
+				// Finally, position the labels using x, y coordinates.
+
+				// For x, use the value previously used to position the bar itself.
+				// In this case, our bar is 30 pixels, plus a 2-pixel margin. This
+				// will put the text exactly at the left edge of the bar. We add 2
+				// to indent the text two pixels from the left edge.
+
+				// For y, use value previously used to position the bar itself. In
+				// this case, the top of each bar is the player age subtracted
+				// from the height of the svg. This will place the text's baseline
+				// (the bottom of our text) above the bar. Add 8 to move the
+				// text below the top edge of the bar. (This last value may change
+			  // depending on your font size.)
+
+				labels.attr("x", function(d, i) {
+					  return (i * 32) + 2;
+  				})
+				  .attr("y", function(d) {
+						return (h - d.Age) + 8;
+					});
+			});
+		</script>
+	</body>
+</html>

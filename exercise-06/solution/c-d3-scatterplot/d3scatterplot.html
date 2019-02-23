@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>d3 Scatterplot (Yankees Players Ages vs. Weight)</title>
+    <style>
+      circle {
+        fill: rgb(0,48,135);
+      }
+
+      text {
+        font-family: sans-serif;
+        fill: white;
+      }
+    </style>
+  </head>
+  <body>
+
+
+    <script src="js/d3.min.js"></script>
+    <script>
+
+      // Define width, height.
+
+      var w = 1200;
+      var h = 800;
+
+
+      // IMPORT DATA
+
+      d3.csv("data/yankees.csv").then(function(data) {
+
+
+        // Select body and append the svg. Capturing this reference in the
+				// variable 'svg' so the reference can be re-used as the svg is
+				// modified.
+
+        var svg = d3.select("body").append("svg");
+
+
+        // Apply the width and height to the svg.
+
+        svg.attr("width", w)
+           .attr("height", h);
+
+
+       // selectAll circles ('circle') to create the elements the data
+       // will be bound to. Attach the data. Use the 'enter' method to
+       // bind a data item to a 'circle'. Append all the 'circle'
+       // elements to the svg.
+
+        svg.selectAll("circle")
+           .data(data)
+           .enter()
+           .append("circle")
+
+ 					 // A continuation of the chain above -- we have separated it
+           // here to explain the details in each 'attr' method below.
+
+           // 'circle' requires three attributes: cx, cy and r.
+
+           // For cx (the x coordinate of the circle's center), use the
+           // player's age with a multiplier of 19 (as specified in the
+           // instructions to separate the plots).
+
+           // For cy (the y coordinate of the circle's center), use the
+           // player's weight with a multiplier of 2 (as specified in
+           // the instructions).
+
+           // The instructions didn't indicate any specific radius size,
+           // but there will need to be space to include a label. Your
+           // value may be different or need to be adjusted later.
+
+           .attr("cx", function(d) {
+             return d.Age * 19;
+           })
+           .attr("cy", function(d) {
+             return h - (d.Weight * 2);
+           })
+           .attr("r", 15);
+
+
+
+        // LABELS
+
+        // The 'parseName' function is repurposed from b-d3-barchart
+        // exercise. Please refer to that solution for details on
+        // the functionality.
+
+        function parseName(player) {
+					var name = player.split(" ");
+					return name[0].charAt(0) + name[1].charAt(0)
+				}
+
+
+        // selectAll text ('text') to create the elements the data
+				// will be bound to. Attach the data. Use the 'enter' method to
+				// bind a data item to a 'text'. Append all the 'text' elements to
+				// the svg.
+
+        var labels = svg.selectAll("text")
+          .data(data)
+          .enter()
+          .append("text")
+
+
+          // Again, a continuation of the chain above...
+
+          // Use JavaScript to parse information from each player object.
+          // The 'parseName' function returns the first and last initial of
+          // the player. Add a dash and the player's position to create the
+          // desired text label.
+
+          // Use the 'style' method to adjust the font size of the text
+          // to 8 pixels. (Your font size may vary.)
+
+          .text(function(d) {
+            return parseName(d.Name) + "-" + d.Position;
+          })
+          .style("font-size", "8px");
+
+
+        // Finally, position the labels using x, y coordinates.
+
+				// For x, use the value previously used to position the circles.
+        // In this case, a player's age with a multiplier of 19.
+
+        // For y, use the value previously used to position the circles.
+        // In this case, a player's weight with a multiplier of 2.
+        // Because y is plotted from top to bottom, this value is then
+        // subtracted from the height of the svg.
+
+        // What about the added values added/subtracted the end of each
+        // return statement?
+
+        // Those were added after the text was initially plotted. That
+        // end value may vary based on your text size, circle radius.
+        // Tinker. See what works for you!
+
+        labels.attr("x", function(d) {
+          return (d.Age * 19) - 11;
+        })
+        .attr("y", function(d) {
+          return h - (d.Weight * 2) + 3;
+        });
+
+      });
+    </script>
+  </body>
+</html>
