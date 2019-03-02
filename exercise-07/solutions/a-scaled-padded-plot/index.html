@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta charset="utf-8">
+		<title>Scaled &amp; Padded Scatterplot</title>
+		<style>
+		  text {
+				font-size: 8px;
+				font-family: sans-serif;
+			}
+		</style>
+	</head>
+	<body>
+
+		<script src="js/d3.js"></script>
+		<script>
+			var dataset = [
+				[5, 20], [480, 90], [250, 50], [100, 33], [330, 95],
+				[410, 12], [475, 44], [25, 67], [85, 21], [220, 88]
+			];
+
+
+      // Setting up variables for later use...
+      // Width, height, padding
+			var w = 500,
+			    h = 100,
+					padding = 20;
+
+
+      // Create the svg...
+			var svg = d3.select("body").append("svg");
+
+
+      // Create our xScale and so the domain maps zero to our max value in
+			// the data set to the width of the svg (minus the padding, which
+		  // could be used to make room for axes)
+			var xScale = d3.scaleLinear()
+			  .domain([0, d3.max(dataset, function(d) { return d[0] })])
+				.range([padding, w - padding]);
+
+
+			// Create our yScale and so the domain maps zero to our max value in
+			// the data set to the height of the svg (minus the padding, which
+		  // could be used to make room for axes)
+			var yScale = d3.scaleLinear()
+			  .domain([0, d3.max(dataset, function(d) { return d[1] })])
+				.range([padding, h - padding]);
+
+
+      // Apply width, height (accounting for padding)
+			svg.attr("width", w + padding)
+			   .attr("height", h + padding);
+
+
+      // Add a circle for each data point. The first value (d[0]) plots
+			// along the x axis; the second value (d[1]) along the y axis. The
+			// radius is static.
+			svg.selectAll("circle")
+			   .data(dataset)
+				 .enter()
+				 .append("circle")
+				 .attr("cx", function(d) { return xScale(d[0]) })
+				 .attr("cy", function(d) { return yScale(d[1]) })
+				 .attr("r", 5);
+
+
+      // Add text labels for each circle / data point. Print the x, y
+			// values next to the circle using the scales defined earlier.
+			// Eight (8) pixels are added to the x value which move the text
+			// from the center of the circle right. This value may vary
+			// depending on the circle radius and font size.
+			var labels = svg.selectAll("text")
+			  .data(dataset)
+				.enter()
+				.append("text")
+				.text(function(d) { return d[0] + ", " + d[1] })
+				.attr("x", function(d) { return xScale(d[0] + 8) })
+				.attr("y", function(d) { return yScale(d[1]) });
+
+		</script>
+	</body>
+</html>
