@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+	  <meta charset="UTF-8" />
+		<title>Line Chart</title>
+    <style>
+
+      body {
+        color: #222;
+      }
+
+      circle {
+        fill: rgba(204,60,45,0.8);
+        stroke: rgb(204,60,45);
+        stroke-width: 2px;
+      }
+
+      text {
+        font-family: sans-serif;
+        font-size: 10px;
+      }
+
+      /*
+        Remember to change the fill for your line to a solid color,
+        otherwise, it your area chart will just look like a line chart!
+      */
+
+      .data-line {
+        fill: rgba(85,174,243,0.5); /* <- Change this! */
+        stroke: rgb(85,174,243);
+        stroke-width: 1px;
+      }
+
+      .mean-line {
+        fill: none;
+        stroke: rgb(204,60,45);
+        stroke-dasharray: 4,4;
+      }
+
+      .note-line {
+        stroke: #666;
+        stroke-width: 1px;
+      }
+
+    </style>
+	</head>
+
+  <body>
+
+    <script src="js/d3.min.js"></script>
+    <script>
+
+      d3.csv("data/unemployment_rate.csv").then(function(data) {
+
+        var timeParser = d3.timeParse("%Y-%m-%d");
+
+        data.forEach(function(d) {
+          d.date = timeParser(d.date);
+          d.unrate = +d.unrate;
+        });
+
+        var w = window.innerWidth,
+            h = window.innerHeight;
+
+        var margin = {
+          top: 60,
+          right: 60,
+          bottom: 60,
+          left: 60
+        };
+
+
+        var svg = d3.select("body").append("svg");
+
+        svg.attr("width", w - margin.right)
+           .attr("height", h);
+
+
+
+        var xScale = d3.scaleTime()
+          .domain(d3.extent(data, function(d) { return d.date } ))
+          .range([0, (w - margin.left - margin.right)]);
+
+        var yScale = d3.scaleLinear()
+          .domain(d3.extent(data, function(d) { return d.unrate }))
+          .range([(h - margin.top - margin.bottom), 0])
+
+
+
+        // THIS is the main difference between a line chart and an area
+        // chart: The area chart uses the area() method and includes a
+        // method which sets up the y0 value -- use the first data
+        // point in the yScale range. (Also, change the style for this
+        // line to have a fill. See the stylesheet above for details.)
+        var line = d3.area()
+          .x(function(d) { return xScale(d.date) })
+          .y0(function(d) { return yScale.range()[0]; })
+          .y1(function(d) { return yScale(d.unrate) });
+
+        svg.append("g")
+           .attr("transform", "translate(" + margin.left + "," + margin.top + ")")
+           .append("path")
+           .datum(data)
+           .attr("class", "data-line")
+           .attr("d", line);
+
+
+
+        var xAxis = d3.axisBottom()
+          .scale(xScale)
+          .ticks(10);
+
+        var yAxis = d3.axisLeft()
+          .scale(yScale)
+          .ticks(10);
+
+        svg.append("g")
+          .attr("transform", "translate(" + margin.left + "," + (h - margin.bottom) + ")")
+          .attr("class", "xaxis")
+          .call(xAxis);
+
+        svg.append("g")
+           .attr("transform", "translate(" + margin.left + "," + margin.top + ")")
+           .attr("class", "yaxis")
+           .call(yAxis);
+
+
+        var mean = d3.mean(data, function(d) { return d.unrate });
+
+        svg.append("line")
+           .attr("transform", "translate(" + margin.left + "," + margin.top + ")")
+           .attr("class", "mean-line")
+           .attr("x1", 0)
+           .attr("x2", (w - margin.left - margin.right))
+           .attr("y1", yScale(mean))
+           .attr("y2", yScale(mean));
+
+        svg.append("text")
+           .attr("x", 20)
+           .attr("y", yScale(mean))
+           .attr("transform", "translate(" + (margin.left + 5) + "," + (margin.top - 5) + ")")
+           .text("Mean Unemployment Rate: " + mean.toPrecision(2))
+
+
+
+        var maxRate = data.filter(function(d) {
+
+          var max = d3.max(data, function(d) { return d.unrate });
+
+          if(d.unrate == max) {
+            return d.unrate;
+          }
+        });
+
+        svg.selectAll("circle")
+           .data(maxRate)
+           .enter()
+           .append("circle")
+           .attr("transform", "translate(" + margin.left + "," + margin.top + ")")
+           .attr("cx", function(d) { return xScale(d.date) } )
+           .attr("cy", function(d) { return yScale(d.unrate) } )
+           .attr("r", 2);
+
+
+        var maxRateX = xScale(maxRate[0].date),
+            maxRateY = yScale(maxRate[0].unrate);
+
+        svg.append("line")
+           .attr("class", "note-line")
+           .attr("transform", "translate(" + margin.left + "," + margin.top + ")")
+           .attr("x1", (maxRateX + 3))
+           .attr("x2", (maxRateX + 13))
+           .attr("y1", (maxRateY - 3))
+           .attr("y2", (maxRateY - 13));
+
+        svg.append("text")
+           .text("Highest Unemployment Rate, " + maxRate[0].unrate + " percent")
+           .attr("x", (maxRateX + 14))
+           .attr("y", (maxRateY - 14))
+           .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+
+      });
+
+    </script>
+  </body>
+</html>

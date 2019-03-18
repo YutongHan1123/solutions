@@ -1,0 +1,310 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+	  <meta charset="UTF-8" />
+		<title>Line Chart</title>
+    <style>
+
+      body {
+        color: #222;
+      }
+
+      circle {
+        fill: rgba(204,60,45,0.8);
+        stroke: rgb(204,60,45);
+        stroke-width: 2px;
+      }
+
+      text {
+        font-family: sans-serif;
+        font-size: 10px;
+      }
+
+      .data-line {
+        fill: none;
+        stroke: rgb(85,174,243);
+        stroke-width: 1px;
+      }
+
+      .mean-line {
+        fill: none;
+        stroke: rgb(204,60,45);
+        stroke-dasharray: 4,4;
+      }
+
+      .note-line {
+        stroke: #666;
+        stroke-width: 1px;
+      }
+
+    </style>
+	</head>
+
+  <body>
+
+    <script src="js/d3.min.js"></script>
+    <script>
+
+      d3.csv("data/unemployment_rate.csv").then(function(data) {
+
+        // Convert data...
+
+        // Set up time parser
+        var timeParser = d3.timeParse("%Y-%m-%d");
+
+
+        // Convert date to Date(), unrate to number
+        data.forEach(function(d) {
+          d.date = timeParser(d.date);
+          d.unrate = +d.unrate;
+        });
+
+
+
+        // SVG properties...
+
+        // Set up width, height
+        var w = window.innerWidth,
+            h = window.innerHeight;
+
+
+        // Set up margins
+        var margin = {
+          top: 60,
+          right: 60,
+          bottom: 60,
+          left: 60
+        };
+
+
+        // Create the SVG
+        var svg = d3.select("body").append("svg");
+
+
+        // Add width, height attributes to SVG
+        svg.attr("width", w - margin.right)
+           .attr("height", h);
+
+
+
+
+        // Scales...
+
+        // Create the x scale (based on time!)
+        var xScale = d3.scaleTime()
+          .domain(d3.extent(data, function(d) { return d.date } ))
+          .range([0, (w - margin.left - margin.right)]);
+
+
+        // Create the y scale (based on rate)
+        var yScale = d3.scaleLinear()
+          .domain(d3.extent(data, function(d) { return d.unrate }))
+          .range([(h - margin.top - margin.bottom), 0])
+
+
+        // Line...
+
+        // Create the line data
+        // Use the xScale (date) to create x values; the yScale to
+        // create y values (unrate).
+        var line = d3.line()
+          .x(function(d) { return xScale(d.date); } )
+          .y(function(d) { return yScale(d.unrate); } );
+
+
+        // Append the line to svg
+        // Create a group for easier positioning. Shift the group to
+        // the left and down based on margin values provided earlier.
+        // Append the path. Attach datum to the path. Add a class (for
+        // styling). Add the d attribute with the value being the line
+        // variable.
+        svg.append("g")
+           .attr("transform", "translate(" + margin.left + "," + margin.top + ")")
+           .append("path")
+           .datum(data)
+           .attr("class", "data-line")
+           .attr("d", line);
+
+
+
+        // Axes...
+
+        // Create the x axis
+        var xAxis = d3.axisBottom()
+          .scale(xScale)
+          .ticks(10);
+
+
+        // Create the y axis
+        var yAxis = d3.axisLeft()
+          .scale(yScale)
+          .ticks(10);
+
+
+        // Append the x axis
+        svg.append("g")
+          .attr("transform", "translate(" + margin.left + "," + (h - margin.bottom) + ")")
+          .attr("class", "xaxis")
+          .call(xAxis);
+
+
+        // Append the y axis
+        svg.append("g")
+           .attr("transform", "translate(" + margin.left + "," + margin.top + ")")
+           .attr("class", "yaxis")
+           .call(yAxis);
+
+
+
+        // Add a 'mean' line...
+
+        // Determine the mean unemployment rate
+        var mean = d3.mean(data, function(d) { return d.unrate });
+
+
+        // Append the line based on the mean data. The y value
+        // will remain constant. We need to plot the starting point
+        // and end point on the x axis -- which will stretch across
+        // the entire chart. Styling is handled via CSS.
+        svg.append("line")
+           .attr("transform", "translate(" + margin.left + "," + margin.top + ")")
+           .attr("class", "mean-line")
+           .attr("x1", 0)
+           .attr("x2", (w - margin.left - margin.right))
+           .attr("y1", yScale(mean))
+           .attr("y2", yScale(mean));
+
+
+        // Append a text label to indicate what the 'mean' line is.
+        // (Javier said to center this ... I'm rebelling stylistically!
+        // I'm keeping it left-aligned, slightly indented from the left
+        // axis.) Include the mean unemployment rate in the text. This
+        // will be a long floating-point number. Use JavaScript's
+        // toPrecision method to return 1-2 decimal points.
+        svg.append("text")
+           .attr("x", 20)
+           .attr("y", yScale(mean))
+           .attr("transform", "translate(" + (margin.left + 5) + "," + (margin.top - 5) + ")")
+           .text("Mean Unemployment Rate: " + mean.toPrecision(2))
+
+
+
+        // Add 'highest rate' circle
+
+        // First determine the highest unemployment rate. Filter the
+        // data. Use d3.max to determine the highest value in unrate.
+        // Create a conditional for the filter. This will create a
+        // single object data point.
+
+        var maxRate = data.filter(function(d) {
+
+          // Determine the max unemployment rate
+          var max = d3.max(data, function(d) { return d.unrate });
+
+          // Create the conditional to only include the max data point
+          if(d.unrate == max) {
+            return d.unrate;
+          }
+        });
+
+
+        // Append the circle based on the maxRate data. Styling is
+        // handled via CSS.
+        svg.selectAll("circle")
+           .data(maxRate)
+           .enter()
+           .append("circle")
+           .attr("transform", "translate(" + margin.left + "," + margin.top + ")")
+           .attr("cx", function(d) { return xScale(d.date) } )
+           .attr("cy", function(d) { return yScale(d.unrate) } )
+           .attr("r", 2);
+
+
+
+        // Add 'highest rate' line and note
+
+        // The circle can be a starting point for determining the
+        // beginning of the line which will point to a note which
+        // indicates its meaning.
+
+        // Because the position of the circle is going to be used
+        // multiple times, store the x, y coordinates in variables.
+        // Remember: maxRate is a one-item array. It must be called
+        // as such to access the object keys inside.
+
+        var maxRateX = xScale(maxRate[0].date),
+            maxRateY = yScale(maxRate[0].unrate);
+
+
+        // Create a line using the maxRateX, maxRateY values. The
+        // numbers added/subtracted offset the line for better
+        // visibility. The number is partially determined by the
+        // circle radius.
+        svg.append("line")
+           .attr("class", "note-line")
+           .attr("transform", "translate(" + margin.left + "," + margin.top + ")")
+           .attr("x1", (maxRateX + 3))
+           .attr("x2", (maxRateX + 13))
+           .attr("y1", (maxRateY - 3))
+           .attr("y2", (maxRateY - 13));
+
+
+        // Add the note, using maxRateX, maxRateY (plus a slight
+        // offset) to position the text.
+        svg.append("text")
+           .text("Highest Unemployment Rate, " + maxRate[0].unrate + " percent")
+           .attr("x", (maxRateX + 14))
+           .attr("y", (maxRateY - 14))
+           .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+
+
+
+        // For those looking to be more creative with the note...
+
+        // Before seeing this in action, comment out lines 250-254!
+
+        // It's easy to find the data necessary to write text for the
+        // note. The data can also be used to generate it. Consider
+        // writing a different date parser -- this time using
+        // JavaScript's Date methods to 'decode' the Date object
+        // format.
+
+        // Note: JavaScript does not return month names, just numbers
+        // representing those months (0-11). We can create an array
+        // of month names and use the number JavaScript returns to
+        // select the corresponding name.
+
+        // Build a string piecemeal, storing it in a variable. Add the
+        // text, the date, and the unemployment rate. This variable
+        // can then be used in the text method.
+
+        // var months = [
+        //   "Jan", "Feb", "Mar",
+        //   "Apr", "May", "Jun",
+        //   "Jul", "Aug", "Sep",
+        //   "Oct", "Nov", "Dec"
+        // ];
+        //
+        // function textualizeDate(date) {
+        //   var m = months[date.getMonth() + 1];
+        //   var y = date.getFullYear();
+        //   return m + ". " + y;
+        // }
+        //
+        // var noteString = "Highest Unemployment Rate: ";
+        //     noteString += maxRate[0].unrate;
+        //     noteString += " percent (";
+        //     noteString += textualizeDate(maxRate[0].date);
+        //     noteString += ")";
+        //
+        // svg.append("text")
+        //    .text(noteString)
+        //    .attr("x", (maxRateX + 14))
+        //    .attr("y", (maxRateY - 14))
+        //    .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+
+      });
+
+    </script>
+  </body>
+</html>
